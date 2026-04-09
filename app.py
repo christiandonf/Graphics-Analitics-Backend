@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from database import db
 from controller.usuario_controller import usuario_bp
@@ -14,4 +15,7 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    host = str(os.environ.get("HOST", "localhost"))
+    port = int(os.environ.get("PORT", 5000))
+    debug = str(os.environ.get("DEBUG", "true"))
+    app.run(debug=debug, port=port, host=host)
