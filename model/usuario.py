@@ -10,6 +10,10 @@ class EmailJaCadastrado(Exception):
     pass
 
 
+class SenhaInvalida(Exception):
+    pass
+
+
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
 

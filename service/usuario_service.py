@@ -1,4 +1,4 @@
-from model.usuario import Usuario, UsuarioNaoEncontrado, EmailJaCadastrado
+from model.usuario import Usuario, UsuarioNaoEncontrado, EmailJaCadastrado, SenhaInvalida
 from dao.usuario_dao import UsuarioDao
 import bcrypt
 
@@ -31,4 +31,18 @@ class UsuarioService:
         usuario = self.dao.buscar_por_id(id)
         if not usuario:
             raise UsuarioNaoEncontrado()
+        return usuario
+
+    def login(self, email, senha):
+        usuario = self.dao.buscar_por_email(email)
+        if not usuario:
+            raise UsuarioNaoEncontrado()
+
+        senha_correta = bcrypt.checkpw(
+            senha.encode('utf-8'),
+            usuario.senha_hash.encode('utf-8')
+        )
+        if not senha_correta:
+            raise SenhaInvalida()
+
         return usuario

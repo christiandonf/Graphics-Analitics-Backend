@@ -6,12 +6,10 @@ from controller.dispositivo_controller import dispositivo_bp
 from controller.leitura_controller import leitura_bp
 import os
 
-# Variaveis dinamicas que sao usadas para definir qual a porta do servidor e o host do mesmo
 host = str(os.environ.get("HOST", "localhost"))
 port = int(os.environ.get("PORT", 5000))
 debug = str(os.environ.get("DEBUG", "true"))
 
-# Variaveis dinamicas usadas para definir o Host do banco de dados assim conectando a banco de dados dedicado
 db_user = str(os.environ.get("POSTGRES_DB_KEY", "fauUser"))
 db_name = str(os.environ.get("POSTGRES_USER_KEY", "facu"))
 db_host = str(os.environ.get("POSTGRES_HOST_KEY", "127.0.0.1"))
