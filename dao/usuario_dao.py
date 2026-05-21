@@ -16,6 +16,10 @@ class UsuarioDao:
         db.session.commit()
         return usuario
 
+    def atualizar(self, usuario):
+        db.session.commit()
+        return usuario
+
     def buscar_por_id(self, id):
         return db.session.get(Usuario, id)
 

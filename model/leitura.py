@@ -1,5 +1,5 @@
 from database import db
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class LeituraNaoEncontrada(Exception):
@@ -12,4 +12,4 @@ class Leitura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dispositivo_id = db.Column(db.Integer, db.ForeignKey('dispositivos.id'), nullable=False)
     payload = db.Column(db.JSON, nullable=False)
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))

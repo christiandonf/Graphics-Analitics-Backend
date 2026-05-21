@@ -16,6 +16,10 @@ class DispositivoDao:
         db.session.commit()
         return dispositivo
 
+    def atualizar(self, dispositivo):
+        db.session.commit()
+        return dispositivo
+
     def buscar_por_id(self, id):
         return db.session.get(Dispositivo, id)
 

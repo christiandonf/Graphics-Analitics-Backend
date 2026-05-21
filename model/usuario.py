@@ -1,5 +1,5 @@
 from database import db
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 class UsuarioNaoEncontrado(Exception):
@@ -14,6 +14,18 @@ class SenhaInvalida(Exception):
     pass
 
 
+class EmailInvalido(Exception):
+    pass
+
+
+class SenhaMuitoCurta(Exception):
+    pass
+
+
+class NomeInvalido(Exception):
+    pass
+
+
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
 
@@ -22,4 +34,4 @@ class Usuario(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     senha_hash = db.Column(db.String(255), nullable=False)
     token_api = db.Column(db.String(36), unique=True, default=lambda: str(uuid.uuid4()))
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))

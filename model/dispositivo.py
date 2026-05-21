@@ -1,5 +1,5 @@
 from database import db
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 
@@ -16,4 +16,4 @@ class Dispositivo(db.Model):
     descricao = db.Column(db.String(200))
     chave = db.Column(db.String(36), unique=True, default=lambda: str(uuid.uuid4()), nullable=False)
     ativo = db.Column(db.Boolean, default=True)
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))

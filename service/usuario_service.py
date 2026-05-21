@@ -1,6 +1,20 @@
-from model.usuario import Usuario, UsuarioNaoEncontrado, EmailJaCadastrado, SenhaInvalida
+import re
+from model.usuario import (
+    Usuario,
+    UsuarioNaoEncontrado,
+    EmailJaCadastrado,
+    SenhaInvalida,
+    EmailInvalido,
+    SenhaMuitoCurta,
+    NomeInvalido,
+)
 from dao.usuario_dao import UsuarioDao
 import bcrypt
+
+
+REGEX_EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+SENHA_MINIMA = 6
+NOME_MINIMO = 2
 
 
 class UsuarioService:
@@ -16,6 +30,10 @@ class UsuarioService:
         self.dao = UsuarioDao.instancia()
 
     def registrar(self, nome, email, senha):
+        self._validar_nome(nome)
+        self._validar_email(email)
+        self._validar_senha(senha)
+
         if self.dao.buscar_por_email(email):
             raise EmailJaCadastrado()
 
@@ -46,3 +64,32 @@ class UsuarioService:
             raise SenhaInvalida()
 
         return usuario
+
+    def atualizar(self, usuario, nome=None, email=None, senha=None):
+        if nome is not None:
+            self._validar_nome(nome)
+            usuario.nome = nome
+        if email is not None and email != usuario.email:
+            self._validar_email(email)
+            if self.dao.buscar_por_email(email):
+                raise EmailJaCadastrado()
+            usuario.email = email
+        if senha is not None:
+            self._validar_senha(senha)
+            usuario.senha_hash = bcrypt.hashpw(
+                senha.encode('utf-8'),
+                bcrypt.gensalt()
+            ).decode('utf-8')
+        return self.dao.atualizar(usuario)
+
+    def _validar_nome(self, nome):
+        if not isinstance(nome, str) or len(nome.strip()) < NOME_MINIMO:
+            raise NomeInvalido()
+
+    def _validar_email(self, email):
+        if not isinstance(email, str) or not REGEX_EMAIL.match(email):
+            raise EmailInvalido()
+
+    def _validar_senha(self, senha):
+        if not isinstance(senha, str) or len(senha) < SENHA_MINIMA:
+            raise SenhaMuitoCurta()

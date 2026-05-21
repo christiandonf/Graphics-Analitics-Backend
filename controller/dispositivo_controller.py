@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from service.dispositivo_service import DispositivoService
+from service.autenticacao_service import AutenticacaoService
 from model.dispositivo import DispositivoNaoEncontrado
 
 dispositivo_bp = Blueprint('dispositivo', __name__)
@@ -7,9 +8,13 @@ dispositivo_bp = Blueprint('dispositivo', __name__)
 
 @dispositivo_bp.route('/dispositivos', methods=['POST'])
 def criar():
+    usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
+    if not usuario:
+        return jsonify({"erro": "Token invalido ou ausente"}), 401
+
     dados = request.get_json()
     dispositivo = DispositivoService.instancia().criar(
-        usuario_id=dados['usuario_id'],
+        usuario_id=usuario.id,
         nome=dados['nome'],
         descricao=dados.get('descricao')
     )
@@ -23,9 +28,13 @@ def criar():
     }), 201
 
 
-@dispositivo_bp.route('/dispositivos/<int:usuario_id>', methods=['GET'])
-def listar(usuario_id):
-    dispositivos = DispositivoService.instancia().listar_por_usuario(usuario_id)
+@dispositivo_bp.route('/dispositivos', methods=['GET'])
+def listar():
+    usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
+    if not usuario:
+        return jsonify({"erro": "Token invalido ou ausente"}), 401
+
+    dispositivos = DispositivoService.instancia().listar_por_usuario(usuario.id)
     return jsonify([{
         "id": d.id,
         "nome": d.nome,
@@ -35,10 +44,46 @@ def listar(usuario_id):
     } for d in dispositivos])
 
 
-@dispositivo_bp.route('/dispositivos/<int:id>', methods=['DELETE'])
-def deletar(id):
+@dispositivo_bp.route('/dispositivos/<chave>', methods=['PUT'])
+def atualizar(chave):
+    usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
+    if not usuario:
+        return jsonify({"erro": "Token invalido ou ausente"}), 401
+
     try:
-        DispositivoService.instancia().deletar(id)
+        dispositivo = DispositivoService.instancia().buscar_por_chave(chave)
+        if dispositivo.usuario_id != usuario.id:
+            return jsonify({"erro": "Dispositivo nao pertence a este usuario"}), 403
+
+        dados = request.get_json()
+        dispositivo = DispositivoService.instancia().atualizar(
+            dispositivo,
+            nome=dados.get('nome'),
+            descricao=dados.get('descricao'),
+            ativo=dados.get('ativo')
+        )
+        return jsonify({
+            "id": dispositivo.id,
+            "nome": dispositivo.nome,
+            "descricao": dispositivo.descricao,
+            "chave": dispositivo.chave,
+            "ativo": dispositivo.ativo
+        })
+    except DispositivoNaoEncontrado:
+        return jsonify({"erro": "Dispositivo nao encontrado"}), 404
+
+
+@dispositivo_bp.route('/dispositivos/<chave>', methods=['DELETE'])
+def deletar(chave):
+    usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
+    if not usuario:
+        return jsonify({"erro": "Token invalido ou ausente"}), 401
+
+    try:
+        dispositivo = DispositivoService.instancia().buscar_por_chave(chave)
+        if dispositivo.usuario_id != usuario.id:
+            return jsonify({"erro": "Dispositivo nao pertence a este usuario"}), 403
+        DispositivoService.instancia().deletar(dispositivo)
         return jsonify({"mensagem": "Dispositivo deletado"}), 200
     except DispositivoNaoEncontrado:
         return jsonify({"erro": "Dispositivo nao encontrado"}), 404
