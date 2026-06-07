@@ -19,8 +19,7 @@ db_password = str(os.environ.get("POSTGRES_PASSWORD_KEY", "123456789"))
 app = Flask(__name__)
 CORS(
     app,
-    supports_credentials=True,
-    resources={r"/api/*": {"origins": "http://analitics.nexuswebdigital.com"}},
+    resources={r"/*": {"origins": "*"}},
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 )
