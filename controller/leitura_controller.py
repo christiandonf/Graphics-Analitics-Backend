@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from service.leitura_service import LeituraService, PeriodoInvalido
 from service.dispositivo_service import DispositivoService
 from service.autenticacao_service import AutenticacaoService
@@ -10,6 +11,7 @@ leitura_bp = Blueprint('leitura', __name__)
 
 
 @leitura_bp.route('/feed/<chave>', methods=['POST'])
+@cross_origin(origin='*')
 def enviar(chave):
     try:
         dispositivo = DispositivoService.instancia().buscar_por_chave(chave)
@@ -36,6 +38,7 @@ def enviar(chave):
 
 
 @leitura_bp.route('/dados/<chave>', methods=['GET'])
+@cross_origin(origin='*')
 def listar(chave):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -63,6 +66,7 @@ def listar(chave):
 
 
 @leitura_bp.route('/estatisticas/<chave>/<campo>', methods=['GET'])
+@cross_origin(origin='*')
 def estatisticas(chave, campo):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -84,6 +88,7 @@ def estatisticas(chave, campo):
 
 
 @leitura_bp.route('/agrupamento/<chave>/<campo>', methods=['GET'])
+@cross_origin(origin='*')
 def agrupamento(chave, campo):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:

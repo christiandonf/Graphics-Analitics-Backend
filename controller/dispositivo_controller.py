@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from service.dispositivo_service import DispositivoService
 from service.autenticacao_service import AutenticacaoService
 from model.dispositivo import DispositivoNaoEncontrado
@@ -7,6 +8,7 @@ dispositivo_bp = Blueprint('dispositivo', __name__)
 
 
 @dispositivo_bp.route('/dispositivos', methods=['POST'])
+@cross_origin(origin='*')
 def criar():
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -45,6 +47,7 @@ def listar():
 
 
 @dispositivo_bp.route('/dispositivos/<chave>', methods=['PUT'])
+@cross_origin(origin='*')
 def atualizar(chave):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -74,6 +77,7 @@ def atualizar(chave):
 
 
 @dispositivo_bp.route('/dispositivos/<chave>', methods=['DELETE'])
+@cross_origin(origin='*')
 def deletar(chave):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:

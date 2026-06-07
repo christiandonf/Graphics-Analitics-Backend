@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from service.usuario_service import UsuarioService
 from service.autenticacao_service import AutenticacaoService
 from model.usuario import (
@@ -14,6 +15,7 @@ usuario_bp = Blueprint('usuario', __name__)
 
 
 @usuario_bp.route('/auth/registro', methods=['POST'])
+@cross_origin(origin='*')
 def registrar():
     dados = request.get_json()
     try:
@@ -39,6 +41,7 @@ def registrar():
 
 
 @usuario_bp.route('/auth/login', methods=['POST'])
+@cross_origin(origin='*')
 def login():
     dados = request.get_json()
     try:
@@ -59,6 +62,7 @@ def login():
 
 
 @usuario_bp.route('/auth/me', methods=['GET'])
+@cross_origin(origin='*')
 def buscar_me():
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -72,6 +76,7 @@ def buscar_me():
 
 
 @usuario_bp.route('/auth/me', methods=['PUT'])
+@cross_origin(origin='*')
 def atualizar_me():
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
