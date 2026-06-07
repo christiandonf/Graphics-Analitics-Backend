@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
 from service.grafico_service import GraficoService
 from service.dispositivo_service import DispositivoService
 from service.autenticacao_service import AutenticacaoService
@@ -11,7 +10,6 @@ grafico_bp = Blueprint('grafico', __name__)
 
 
 @grafico_bp.route('/graficos', methods=['POST'])
-@cross_origin(origin='*')
 def criar():
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -45,7 +43,6 @@ def criar():
 
 
 @grafico_bp.route('/graficos', methods=['GET'])
-@cross_origin(origin='*')
 def listar():
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -65,7 +62,6 @@ def listar():
 
 
 @grafico_bp.route('/graficos/<int:id>', methods=['GET'])
-@cross_origin(origin='*')
 def buscar(id):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -88,7 +84,6 @@ def buscar(id):
 
 
 @grafico_bp.route('/graficos/<int:id>', methods=['PUT'])
-@cross_origin(origin='*')
 def atualizar(id):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
@@ -121,7 +116,6 @@ def atualizar(id):
 
 
 @grafico_bp.route('/graficos/<int:id>', methods=['DELETE'])
-@cross_origin(origin='*')
 def deletar(id):
     usuario = AutenticacaoService.instancia().obter_usuario_autenticado()
     if not usuario:
