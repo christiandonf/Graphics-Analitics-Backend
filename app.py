@@ -17,12 +17,7 @@ db_host = str(os.environ.get("POSTGRES_HOST_KEY", "localhost"))
 db_password = str(os.environ.get("POSTGRES_PASSWORD_KEY", "123456789"))
 
 app = Flask(__name__)
-CORS(
-    app,
-    resources={r"/*": {"origins": "*"}},
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL',
     'postgresql+psycopg2://%s:%s@%s:%s/graphics_analytics' %(db_user, db_password, db_host, db_port)
